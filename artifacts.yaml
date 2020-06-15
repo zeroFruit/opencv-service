@@ -1,0 +1,56 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: result-data
+  labels:
+    app: result-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: default
+
+---
+
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: opencv
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: opencv
+    spec:
+      containers:
+        - name: opencv
+          image: zerofruit/opencv:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: products-data
+              mountPath: /usr/src/app/images
+            - name: result-data
+              mountPath: /usr/src/app/results
+          command: ["python"]
+          args: ["src/main.py"]
+          env:
+          - name: OUTPUT_DIR
+            value: /usr/src/app/results
+          - name: IMAGE_DIR
+            value: /usr/src/app/images
+          - name: THRESHOLD_PERCENT
+            value: "0.1"
+          - name: SUBDIR
+            value: "2"
+      volumes:
+        - name: result-data
+          persistentVolumeClaim:
+            claimName: result-data
+        - name: products-data
+          persistentVolumeClaim:
+            claimName: products-data
+

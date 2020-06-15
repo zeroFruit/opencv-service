@@ -1,0 +1,6 @@
+venv/
+images/
+results/
+S2B*/
+scripts/
+artifacts.yaml

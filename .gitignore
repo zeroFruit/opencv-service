@@ -1,0 +1,6 @@
+images/
+results/
+venv/
+.idea/
+.DS_Store
+scripts/
